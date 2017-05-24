@@ -11,7 +11,7 @@ def Normalize(p):
     print(prob)
     return(prob)
     
-similar = 0.5  #tolerance of each element
+similar = 0.5  #percentage of similar neighbors required for satisfaction
 empty = 0.1    #chance of an empty element
 
 #the number of groups is defined by the following probability list
