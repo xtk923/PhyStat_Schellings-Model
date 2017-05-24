@@ -14,7 +14,7 @@ def Normalize(p):
 similar = 0.5  #tolerance of each element
 empty = 0.1    #chance of an empty element
 
-#the amount of groups is defined by the following probability list
+#the number of groups is defined by the following probability list
 # [0.3, 0.4, 0.3] will run the program for 3 groups (respective probabilities)
 probabilities=[0.25,0.25,0.25,0.25]
 num_group=len(probabilities)
