@@ -12,13 +12,13 @@ def Normalize(p):
     return(prob)
     
 empty = 0.1    #chance of an empty element
-similar = 0.6  #tolerance of each element
-p_Sch = 0.9
-p_Voter = 1
+similar = 0.6  #requirement of similar neighbors for satisfaction
+p_Sch = 0.9     #prob for the iteration to follow schelling's dynamics
+p_Voter = 1    # once Voter is selected, prob of an unsatisfied agent to move (change color)
 
 #the amount of groups is defined by the following probability list
 # [0.3, 0.4, 0.3] will run the program for 3 groups (respective probabilities)
-probabilities=[0.25,0.25]
+probabilities=[0.4,0.6]
 num_group=len(probabilities)
 probabilities=Normalize(probabilities)  #avoid problems with probabilities input
 
@@ -34,6 +34,7 @@ class Board:
             self.prob.append(p) #prob[i] = probability of 'Group i' 
         ##
         self.r = np.zeros(shape=(size+2, size+2))  # define the region
+        self.rbu=self.r
         self.satisfiedPerc = 0
 
         for i in range(0, self.s+2):  # define a larger region
@@ -57,14 +58,14 @@ class Board:
     def neighbors(self,position):
         i=position[0]
         j=position[1]
-        voisins = [self.r[i-1][j-1],
-                        self.r[i-1][j],
-                        self.r[i-1][j+1],
-                        self.r[i][j-1],
-                        self.r[i][j+1],
-                        self.r[i+1][j-1],
-                        self.r[i+1][j],
-                        self.r[i+1][j+1]]
+        voisins = [self.rbu[i-1][j-1],
+                        self.rbu[i-1][j],
+                        self.rbu[i-1][j+1],
+                        self.rbu[i][j-1],
+                        self.rbu[i][j+1],
+                        self.rbu[i+1][j-1],
+                        self.rbu[i+1][j],
+                        self.rbu[i+1][j+1]]
         return(voisins)
 
     def satisfaction(self,position):
@@ -118,6 +119,7 @@ class Board:
         for l in uS_C: TotalUnsatisfied+=l 
         self.satisfiedPerc = 1 - TotalUnsatisfied/(self.s**2)
         print('Satisfaction: ', self.satisfiedPerc)
+        print(uS_C)
 
 
 
@@ -132,6 +134,9 @@ class Board:
                 random.shuffle(eGroup[i])   #shuffles the list of unsatisfied agents of 'Group i'
                 quota.append(int(round(uS_C[i]/TotalUnsatisfied * NbVoter)))  #the number of each group's moved agents is proportinal to the amount of unsatisfied agents
                 agent_selected.append([])
+            self.rbu=self.r                 #back up to modify self.r without influencing the other groups
+            for i in range(1,num_group+1):
+                i=num_group+1-i
                 limit=sorted([0,quota[i],uS_C[i]])[1]
                 for j in range(limit):                       #for every unsatisfied agent that will move from group i
                     agent_selected[i].append(eGroup[i].pop())   #assings a random chosen unsatisfied agent from group i and remove it from the list
@@ -186,13 +191,22 @@ plt.savefig("start.png")
 
 count=0
 max_iterations=100
-while board.satisfiedPerc < 0.99 and count<max_iterations:
+while board.satisfiedPerc < 0.999 and count<max_iterations:
     board.iterate()
     count+=1
 
 plt.imshow(board.r)
-
 plt.savefig("end.png")
 plt.close()
 
+count=0
+total=0
+for i in board.r:
+    for j in i:
+        if j!=0:
+            count+=j
+            total+=1
+print(count/total)
 print("End\n")
+
+
