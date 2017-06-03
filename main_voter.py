@@ -74,12 +74,22 @@ class Board:
         nb_notri=self.neighbors(position)
         #print(nb_notri)
         nb=[0]
+        maxima=[] #indices of the groups that have the maximum 
         for i in range(1,num_group+1):
             nb.append(0)
         for e in nb_notri:
             nb[int(e)]+=1
             nb[0]=0
-        return(nb.index(max(nb)))
+            
+        maximum=max(nb)
+        #print(maximum)
+        for i in range(1,num_group+1):
+            if nb[i]==maximum:
+                maxima.append(i)
+        #print(maxima)
+        #return(nb.index(max(nb)))
+        return(npr.choice(maxima))
+
         
     
     def iterate(self):
