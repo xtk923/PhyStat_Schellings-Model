@@ -11,12 +11,12 @@ def Normalize(p):
     print(prob)
     return(prob)
     
-similar = 0.5  #percentage of similar neighbors required for satisfaction
+similar = 0.6  #percentage of similar neighbors required for satisfaction
 empty = 0.1    #chance of an empty element
 
 #the number of groups is defined by the following probability list
 # [0.3, 0.4, 0.3] will run the program for 3 groups (respective probabilities)
-probabilities=[0.25,0.25,0.25,0.25]
+probabilities=[0.25, 0.25, 0.5]
 num_group=len(probabilities)
 probabilities=Normalize(probabilities)  #avoid problems with probabilities input
 
@@ -129,19 +129,19 @@ class Board:
 
 
 board = Board(size=100,)
-plt.imshow(board.r)
-
-plt.savefig("start.png")
-
 count=0
 max_iterations=200
-while board.satisfiedPerc < 0.95 and count<max_iterations:
+while board.satisfiedPerc < 1 and count<max_iterations:
+    plt.imshow(board.r)
+    folderName = str(num_group)+" groups__"+"_Sim "+str(similar)+"_Prob  "+str(probabilities)+" "+str(empty) + " empty"
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+    fileName = str(count)+".png"
+    plt.savefig(os.path.join(folderName, fileName))
     board.iterate()
     count+=1
 
-plt.imshow(board.r)
 
-plt.savefig("end.png")
 plt.close()
 
 print("End\n")
