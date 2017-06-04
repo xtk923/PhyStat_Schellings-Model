@@ -6,7 +6,7 @@ import random
 
 similar = 0.5
 chance = 0.5
-empty = 0.1
+# empty = 0.8
 
 
 class Board:
@@ -65,7 +65,7 @@ class Board:
                         if self.r[i][j] == 2:
                             uS_C[1] += 1
                             eB.append([i, j])  # empty B
-        self.satisfiedPerc = 1 - (uS_C[0] + uS_C[1])/(self.s**2)
+        self.satisfiedPerc = 1 - (uS_C[0] + uS_C[1])/(self.s**2-len(eS))
         print(self.satisfiedPerc)
 
         # in caes there are more empty slots than unsatisfied agents
@@ -103,7 +103,7 @@ class Board:
                 self.r[e[0]][e[1]] = 0
 
 
-board = Board(size=100)
+board = Board(size=100, empty=0.2)
 plt.imshow(board.r)
 
 plt.savefig("start.png")

@@ -10,13 +10,13 @@ def Normalize(p):
     for i in range(len(p)): prob.append(p[i]/total)
     print(prob)
     return(prob)
-    
-similar = 0.6  #percentage of similar neighbors required for satisfaction
-empty = 0.1    #chance of an empty element
+
+similar = 4/8  #percentage of similar neighbors required for satisfaction
+empty = 0.3    #chance of an empty element
 
 #the number of groups is defined by the following probability list
 # [0.3, 0.4, 0.3] will run the program for 3 groups (respective probabilities)
-probabilities=[0.25, 0.25, 0.5]
+probabilities=[0.5, 0.5]
 num_group=len(probabilities)
 probabilities=Normalize(probabilities)  #avoid problems with probabilities input
 
@@ -29,7 +29,7 @@ class Board:
         ##
         self.prob = [empty]     #list assigning a probability to each group
         for p in probabilities: #prob[0] = probability of 'empty'
-            self.prob.append(p) #prob[i] = probability of 'Group i' 
+            self.prob.append(p) #prob[i] = probability of 'Group i'
         ##
         self.r = np.zeros(shape=(size+2, size+2))  # define the region
         self.satisfiedPerc = 0
@@ -56,10 +56,10 @@ class Board:
     def iterate(self):
         # for every list: list[0] means nothing, list[i] = information for 'Group i'
         uS_C = [0]              # unsatisfied counter for each group
-        eGroup=[0]              # coordinates of each group's unsatisfied elements 
+        eGroup=[0]              # coordinates of each group's unsatisfied elements
         for i in range(1,num_group+1): #declares the object shape of uS_C and eGroup
             uS_C.append(0)
-            eGroup.append([])   
+            eGroup.append([])
         eS = []                 # empty slots
         # find all the non-satisfied agents
         for i in range(1, self.s+1):  # iterate over all non-boundary points
@@ -85,17 +85,17 @@ class Board:
                     if simi_C/8 < similar:  #if agent is unsatisfied
                         uS_C[int(self.r[i][j])] += 1
                         eGroup[int(self.r[i][j])].append([i, j])
-                        
+
         TotalUnsatisfied=0
-        for l in uS_C: TotalUnsatisfied+=l 
-        self.satisfiedPerc = 1 - TotalUnsatisfied/(self.s**2)
+        for l in uS_C: TotalUnsatisfied+=l
+        self.satisfiedPerc = 1 - TotalUnsatisfied/(self.s**2-len(eS))
         print('Satisfaction: ', self.satisfiedPerc)
-        
-        
+
+
         if len(eS) > TotalUnsatisfied:  # in case there are more empty slots than unsatisfied agents
                                         # randomly assigned the moved agents to available slots
             eS = random.sample(eS, TotalUnsatisfied)  #TotalUnsat # of empty slots
-            agent_empty=[0]               #agent_empty assigns the correct number of empty slots coordinates that`ll be filled by each group 
+            agent_empty=[0]               #agent_empty assigns the correct number of empty slots coordinates that`ll be filled by each group
             random.shuffle(eS)            #shuffle the empty coordinates list
             for i in range(1,num_group+1):          #for every group
                 agent_empty.append([])              #declares another group information on angent_empty
@@ -105,9 +105,9 @@ class Board:
                     self.r[e[0]][e[1]] = float(i)
                 for e in eGroup[i]:                 #sets as 'empty' the previous slots occupied by the agents
                     self.r[e[0]][e[1]] = float(0)
-                   
 
-                
+
+
         else:                   # more unsatisfied agents than empty slots
             quota=[0]           #number of unsatisfied agents that will move from each group
             agent_empty=[0]     #the reserved empty slots that will be occupied
@@ -128,9 +128,9 @@ class Board:
                     self.r[e[0]][e[1]] = float(0)
 
 
-board = Board(size=100,)
+board = Board(size=100)
 count=0
-max_iterations=200
+max_iterations=300
 while board.satisfiedPerc < 1 and count<max_iterations:
     plt.imshow(board.r)
     folderName = str(num_group)+" groups__"+"_Sim "+str(similar)+"_Prob  "+str(probabilities)+" "+str(empty) + " empty"
